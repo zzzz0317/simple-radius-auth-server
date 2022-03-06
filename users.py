@@ -15,7 +15,7 @@ def _find_user(all_users, username, password):
         for u in all_users:
             if u["auth"]["username"] == username:
                 if u["auth"]["password"] == password:
-                    return True, u["reply_attr"]
+                    return True, u
     except Exception:
         logger.error("Got an error during find_user, username={}, password={}\n{}", username, password,
                      traceback.format_exc())

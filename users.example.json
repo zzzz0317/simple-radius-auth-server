@@ -1,14 +1,15 @@
 {
   "users": [
     {
+      "description": "test description",
       "auth": {
         "username": "a-username",
         "password": "a-password"
       },
       "reply_attr": {
-        "Tunnel-Type:0": "VLAN",
-        "Tunnel-Medium-Type:0": "IEEE-802",
-        "Tunnel-Private-Group-Id:0": "4094",
+        "Tunnel-Type": "VLAN",
+        "Tunnel-Medium-Type": "IEEE-802",
+        "Tunnel-Private-Group-Id": "4094",
         "Acct-Interim-Interval": 300
       }
     }

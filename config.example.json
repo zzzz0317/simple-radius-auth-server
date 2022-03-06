@@ -20,9 +20,9 @@
   "default": {
     "accept": true,
     "accept-attr": {
-      "Tunnel-Type:0": "VLAN",
-      "Tunnel-Medium-Type:0": "IEEE-802",
-      "Tunnel-Private-Group-Id:0": "4000",
+      "Tunnel-Type": "VLAN",
+      "Tunnel-Medium-Type": "IEEE-802",
+      "Tunnel-Private-Group-Id": "4000",
       "Acct-Interim-Interval": 90
     }
   }

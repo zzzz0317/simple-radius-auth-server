@@ -23,17 +23,19 @@ class RadiusAuthServer(server.Server):
             auth_username = pkt["User-Name"][0]
             auth_password = pkt.PwDecrypt(pkt["User-Password"][0])
             logger.info("ID={} username={} password={}", pkt.id, auth_username, auth_password)
-            auth_ok, reply_attr = find_user(auth_username, auth_password)
+            auth_ok, user = find_user(auth_username, auth_password)
             if auth_ok:
+                reply_attr = fill_with_default_attr(user["reply_attr"])
                 reply = self.CreateReplyPacket(pkt, **reply_attr)
                 reply.code = packet.AccessAccept
                 self.SendReplyPacket(pkt.fd, reply)
-                logger.info("ID={} auth_ok\n{}", pkt.id, reply_attr)
+                logger.info("ID={} auth_ok, description={}\n{}", pkt.id, user["description"], reply_attr)
             elif config["default"]["accept"]:
-                reply = self.CreateReplyPacket(pkt, **config["default"]["accept-attr"])
+                reply_attr = fill_with_default_attr(config["default"]["accept-attr"])
+                reply = self.CreateReplyPacket(pkt, **reply_attr)
                 reply.code = packet.AccessAccept
                 self.SendReplyPacket(pkt.fd, reply)
-                logger.info("ID={} auth_default_accept\n{}", pkt.id, config["default"]["accept-attr"])
+                logger.info("ID={} auth_default_accept\n{}", pkt.id, reply_attr)
             else:
                 reply = self.CreateReplyPacket(pkt)
                 reply.code = packet.AccessReject
@@ -54,6 +56,13 @@ def pkt_to_str(pkt):
         except Exception as e:
             s = s + "\n%s: %s" % (attr, e)
     return s
+
+
+def fill_with_default_attr(attr):
+    for k in config["attr"]:
+        if k not in attr:
+            attr[k] = config["attr"][k]
+    return attr
 
 
 if __name__ == '__main__':
