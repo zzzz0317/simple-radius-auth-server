@@ -1,3 +1,5 @@
+# from https://gist.github.com/gustaebel/b58e887ba93a4d0eba102dae871e11af
+
 """Very basic select.poll() implementation for Windows using select.select().
 Developed for and tested with https://github.com/pyradius/pyrad only.
 
