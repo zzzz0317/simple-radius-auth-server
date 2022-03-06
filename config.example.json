@@ -1,0 +1,29 @@
+{
+  "clients": [
+    {
+      "client": "192.168.0.1",
+      "secret": "secret123"
+    },
+    {
+      "client": "192.168.0.2",
+      "secret": "secret1234"
+    }
+  ],
+  "port": 1812,
+  "bind": [
+    "127.0.0.1",
+    "0.0.0.0"
+  ],
+  "attr": {
+    "Acct-Interim-Interval": 300
+  },
+  "default": {
+    "accept": true,
+    "accept-attr": {
+      "Tunnel-Type:0": "VLAN",
+      "Tunnel-Medium-Type:0": "IEEE-802",
+      "Tunnel-Private-Group-Id:0": "4000",
+      "Acct-Interim-Interval": 90
+    }
+  }
+}
