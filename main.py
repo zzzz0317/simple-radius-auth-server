@@ -9,6 +9,7 @@ from zzlogger import logger
 logging.basicConfig(filename="pyrad.log", level="DEBUG",
                     format="%(asctime)s [%(levelname)-8s] %(message)s")
 
+
 class RadiusAuthServer(server.Server):
 
     def HandleAuthPacket(self, pkt):
@@ -25,14 +26,16 @@ class RadiusAuthServer(server.Server):
             auth_ok, user = find_user(auth_username, auth_password)
             if auth_ok:
                 reply_attr = fill_with_default_attr(user["reply_attr"])
-                reply = self.CreateReplyPacket(pkt, **reply_attr)
+                reply = self.CreateReplyPacket(pkt)
+                add_attr_to_reply(reply, reply_attr)
                 reply.code = packet.AccessAccept
                 self.SendReplyPacket(pkt.fd, reply)
                 logger.info("ID={} auth_ok, description={}", pkt.id, user["description"])
                 logger.info("ID={} reply_attr={}", pkt.id, reply_attr)
             elif config["default"]["accept"]:
                 reply_attr = fill_with_default_attr(config["default"]["accept-attr"])
-                reply = self.CreateReplyPacket(pkt, **reply_attr)
+                reply = self.CreateReplyPacket(pkt)
+                add_attr_to_reply(reply, reply_attr)
                 reply.code = packet.AccessAccept
                 self.SendReplyPacket(pkt.fd, reply)
                 logger.info("ID={} auth_default_accept", pkt.id)
@@ -75,6 +78,16 @@ def pkt_to_dict(pkt):
         except Exception as e:
             d[attr] = e
     return d
+
+
+def add_attr_to_reply(reply, reply_attr):
+    for k in reply_attr.keys():
+        v = reply_attr[k]
+        if isinstance(v, str) or isinstance(v, int):
+            reply.AddAttribute(k, v)
+        elif isinstance(v, list):
+            for vv in v:
+                reply.AddAttribute(k, vv)
 
 
 def fill_with_default_attr(attr):
