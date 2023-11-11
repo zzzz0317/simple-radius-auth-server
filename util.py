@@ -16,9 +16,7 @@ def get_running_path_file(*sub_path):
 
 def calculate_hash(algorithm: str, data: str):
     algorithm = algorithm.lower()
-    if algorithm == 'plain':
-        return data
-    elif algorithm == 'md5':
+    if algorithm == 'md5':
         hash_object = hashlib.md5()
     elif algorithm == 'sha1':
         hash_object = hashlib.sha1()

@@ -14,10 +14,13 @@ def _find_user(all_users, username, password):
     try:
         for u in all_users:
             if u["auth"]["username"] == username:
-                password_type = u["auth"].get("passtype", "plain")
+                password_type = u["auth"].get("passtype", "plain").lower()
                 if password_type == "any":
                     return True, u
-                elif password_type.lower() in ["plain", "md5", "sha1", "sha256", "sha512"]:
+                elif password_type == "plain":
+                    if u["auth"]["password"] == password:
+                        return True, u
+                elif password_type in ["md5", "sha1", "sha256", "sha512"]:
                     hashed_password = calculate_hash(password_type, password)
                     logger.debug("username={}, hashed_password={}", username, hashed_password)
                     if u["auth"]["password"] == hashed_password:
