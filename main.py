@@ -22,7 +22,7 @@ class RadiusAuthServer(server.Server):
             logger.debug("ID={} {}", pkt.id, pkt_to_str(pkt))
             auth_username = pkt["User-Name"][0]
             auth_password = pkt.PwDecrypt(pkt["User-Password"][0])
-            logger.info("ID={} username={} password={}", pkt.id, auth_username, auth_password)
+            logger.info("ID={} username={}", pkt.id, auth_username)
             auth_ok, user = find_user(auth_username, auth_password)
             if auth_ok:
                 reply_attr = fill_with_default_attr(user["reply_attr"])
