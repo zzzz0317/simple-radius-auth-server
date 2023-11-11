@@ -1,15 +1,13 @@
 from pyrad import dictionary, packet, server
 import logging
-from loguru import logger
-import traceback
 import platform
 from util import *
 from config import config
 from users import *
+from zzlogger import logger
 
 logging.basicConfig(filename="pyrad.log", level="DEBUG",
                     format="%(asctime)s [%(levelname)-8s] %(message)s")
-
 
 class RadiusAuthServer(server.Server):
 
@@ -19,7 +17,7 @@ class RadiusAuthServer(server.Server):
             if not pkt.verify_message_authenticator():
                 logger.warning("Authentication request ID={} verify failed, ignore packet.", pkt.id)
                 return
-            logger.debug("ID={} {}", pkt.id, pkt_to_str(pkt))
+            logger.debug("ID={} {}", pkt.id, pkt_to_dict(pkt))
             auth_username = pkt["User-Name"][0]
             auth_password = pkt.PwDecrypt(pkt["User-Password"][0])
             logger.info("ID={} username={}", pkt.id, auth_username)
@@ -29,20 +27,24 @@ class RadiusAuthServer(server.Server):
                 reply = self.CreateReplyPacket(pkt, **reply_attr)
                 reply.code = packet.AccessAccept
                 self.SendReplyPacket(pkt.fd, reply)
-                logger.info("ID={} auth_ok, description={}\n{}", pkt.id, user["description"], reply_attr)
+                logger.info("ID={} auth_ok, description={}", pkt.id, user["description"])
+                logger.info("ID={} reply_attr={}", pkt.id, reply_attr)
             elif config["default"]["accept"]:
                 reply_attr = fill_with_default_attr(config["default"]["accept-attr"])
                 reply = self.CreateReplyPacket(pkt, **reply_attr)
                 reply.code = packet.AccessAccept
                 self.SendReplyPacket(pkt.fd, reply)
-                logger.info("ID={} auth_default_accept\n{}", pkt.id, reply_attr)
+                logger.info("ID={} auth_default_accept", pkt.id)
+                logger.info("ID={} reply_attr={}", pkt.id, reply_attr)
             else:
                 reply = self.CreateReplyPacket(pkt)
                 reply.code = packet.AccessReject
                 self.SendReplyPacket(pkt.fd, reply)
                 logger.info("ID={} auth_default_reject", pkt.id)
         except Exception as e:
-            logger.error("Got an error during HandleAuthPacket, pkt.id={}, reply reject.\n{}\n{}", pkt.id, pkt_to_str(pkt), traceback.format_exc())
+            logger.error("Got an error during HandleAuthPacket, reply reject, pkt.id={}, pkt={}", pkt.id,
+                         pkt_to_dict(pkt))
+            logger.exception(e)
             reply = self.CreateReplyPacket(pkt)
             reply.code = packet.AccessReject
             self.SendReplyPacket(pkt.fd, reply)
@@ -58,6 +60,16 @@ def pkt_to_str(pkt):
     return s
 
 
+def pkt_to_dict(pkt):
+    d = {}
+    for attr in pkt.keys():
+        try:
+            d[attr] = pkt[attr][0]
+        except Exception as e:
+            d[attr] = e
+    return d
+
+
 def fill_with_default_attr(attr):
     for k in config["attr"]:
         if k not in attr:
@@ -70,12 +82,13 @@ if __name__ == '__main__':
     if not platform.system().lower() == 'linux':
         logger.warning("System platform is not Linux, install custom poll")
         import poll
+
         poll.install()
     authport = config["port"]
     logger.info("Initializing RadiusAuthServer, authport={}", authport)
     srv = RadiusAuthServer(dict=dictionary.Dictionary(get_script_path_file("dict.txt")),
-                             authport=authport,
-                             auth_enabled=True, acct_enabled=False, coa_enabled=False)
+                           authport=authport,
+                           auth_enabled=True, acct_enabled=False, coa_enabled=False)
     # add clients (address, secret, name)
     for client in config["clients"]:
         logger.info("Add client {}, secret={}", client["client"], client["secret"])

@@ -25,5 +25,6 @@
       "Tunnel-Private-Group-Id": "4000",
       "Acct-Interim-Interval": 90
     }
-  }
+  },
+  "logger_level": "INFO"
 }

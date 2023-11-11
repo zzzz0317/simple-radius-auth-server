@@ -1,10 +1,8 @@
-import hashlib
-
 from util import *
 import json
 import traceback
-from loguru import logger
 from config import config
+from zzlogger import logger
 
 
 def load_users(filepath):
@@ -21,7 +19,7 @@ def _find_user(all_users, username, password):
                     return True, u
                 elif password_type.lower() in ["plain", "md5", "sha1", "sha256", "sha512"]:
                     hashed_password = calculate_hash(password_type, password)
-                    logger.debug("hashed_password={}", hashed_password)
+                    logger.debug("username={}, hashed_password={}", username, hashed_password)
                     if u["auth"]["password"] == hashed_password:
                         return True, u
                 else:
@@ -40,5 +38,6 @@ if __name__ == '__main__':
     # print(json.dumps(users, ensure_ascii=False, indent=4))
     print(find_user("111", "111"))
     from time import sleep
+
     sleep(5)
     print(find_user("111", "123"))
