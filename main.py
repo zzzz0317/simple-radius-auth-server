@@ -42,6 +42,12 @@ class RadiusAuthServer(server.Server):
                 reply.code = packet.AccessReject
                 self.SendReplyPacket(pkt.fd, reply)
                 logger.info("ID={} auth_default_reject", pkt.id)
+        except UnicodeDecodeError:
+            logger.error("Got an UnicodeDecodeError during HandleAuthPacket, reply reject, pkt.id={}, pkt={}", pkt.id,
+                         pkt_to_dict(pkt))
+            reply = self.CreateReplyPacket(pkt)
+            reply.code = packet.AccessReject
+            self.SendReplyPacket(pkt.fd, reply)
         except Exception as e:
             logger.error("Got an error during HandleAuthPacket, reply reject, pkt.id={}, pkt={}", pkt.id,
                          pkt_to_dict(pkt))
