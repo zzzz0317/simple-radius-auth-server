@@ -26,5 +26,6 @@
       "Acct-Interim-Interval": 90
     }
   },
+  "verify_message_authenticator": false,
   "logger_level": "INFO"
 }

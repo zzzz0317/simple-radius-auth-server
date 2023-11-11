@@ -14,9 +14,10 @@ class RadiusAuthServer(server.Server):
     def HandleAuthPacket(self, pkt):
         logger.info("Received an authentication request ID={}", pkt.id)
         try:
-            if not pkt.verify_message_authenticator():
-                logger.warning("Authentication request ID={} verify failed, ignore packet.", pkt.id)
-                return
+            if config.get("verify_message_authenticator", False):
+                if not pkt.verify_message_authenticator():
+                    logger.warning("Authentication request ID={} verify failed, ignore packet.", pkt.id)
+                    return
             logger.debug("ID={} {}", pkt.id, pkt_to_dict(pkt))
             auth_username = pkt["User-Name"][0]
             auth_password = pkt.PwDecrypt(pkt["User-Password"][0])
