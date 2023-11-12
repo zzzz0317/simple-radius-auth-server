@@ -34,7 +34,11 @@ def calculate_hash(algorithm: str, data: str):
     return hash_object.hexdigest()
 
 
-def argon2_verify(hashed_password, password):
+def argon2_hash(password: str):
+    return argon2_password_hasher.hash(password)
+
+
+def argon2_verify(hashed_password: str, password: str):
     try:
         return argon2_password_hasher.verify(hashed_password, password)
     except argon2.exceptions.VerifyMismatchError:
