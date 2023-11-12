@@ -25,6 +25,9 @@ def _find_user(all_users, username, password):
                     logger.debug("username={}, hashed_password={}", username, hashed_password)
                     if u["auth"]["password"] == hashed_password:
                         return True, u
+                elif password_type == "argon2":
+                    if argon2_verify(u["auth"]["password"], password):
+                        return True, u
                 else:
                     logger.warning("Not supported password type: {}, please check users.json!", password_type)
     except Exception:

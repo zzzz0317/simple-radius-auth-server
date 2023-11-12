@@ -2,8 +2,12 @@ import hashlib
 import os
 import sys
 
+import argon2
+
 DIR_SCRIPT = os.path.dirname(os.path.realpath(sys.argv[0]))
 DIR_RUNNING = os.getcwd()
+
+argon2_password_hasher = argon2.PasswordHasher()
 
 
 def get_script_path_file(*sub_path):
@@ -28,3 +32,10 @@ def calculate_hash(algorithm: str, data: str):
         raise Exception("Hash algorithm not supported")
     hash_object.update(data.encode('utf-8'))
     return hash_object.hexdigest()
+
+
+def argon2_verify(hashed_password, password):
+    try:
+        return argon2_password_hasher.verify(hashed_password, password)
+    except argon2.exceptions.VerifyMismatchError:
+        return False
