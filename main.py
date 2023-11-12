@@ -91,9 +91,22 @@ def add_attr_to_reply(reply, reply_attr):
 
 
 def fill_with_default_attr(attr):
-    for k in config["attr"]:
-        if k not in attr:
-            attr[k] = config["attr"][k]
+    attr_default = config.get("attr", {})
+    attr_append = config.get("attr_append", {})
+    for k in attr_default.keys():
+        if k not in attr.keys():
+            attr[k] = attr_default[k]
+    for k in attr_append.keys():
+        vals = attr_append[k]
+        if isinstance(vals, str):
+            vals = [vals]
+        if k in attr.keys():
+            if isinstance(attr[k], str):
+                attr[k] = [attr[k]]
+            attr[k].extend(vals)
+            attr[k] = list(set(attr[k]))
+        else:
+            attr[k] = attr_append[k]
     return attr
 
 

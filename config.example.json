@@ -17,6 +17,9 @@
   "attr": {
     "Acct-Interim-Interval": 300
   },
+  "attr_append": {
+    "Framed-Route": ["10.0.0.0/24"]
+  },
   "default": {
     "accept": true,
     "accept-attr": {
