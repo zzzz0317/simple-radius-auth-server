@@ -27,5 +27,11 @@
         "Acct-Interim-Interval": 300
       }
     }
+  ],
+  "includes": [
+    {
+      "path": "users2.json",
+      "enable": false
+    }
   ]
 }
